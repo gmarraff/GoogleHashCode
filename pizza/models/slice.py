@@ -27,7 +27,7 @@ class Slice:
             self.c1 < pizza.c
 
     def not_too_large(self, pizza):
-        return (self.r1-self.r0) * (self.c1-self.c0) <= pizza.h
+        return (self.r1-self.r0+1) * (self.c1-self.c0+1) <= pizza.h
 
     def contain_ingredients(self, pizza):
         m = t = 0
