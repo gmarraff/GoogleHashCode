@@ -12,4 +12,4 @@ class Pizza:
         self.rows = rows
 
     def cut(self):
-        # crazy algorithm here
+        print("tajo")
