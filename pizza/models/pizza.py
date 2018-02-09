@@ -12,6 +12,5 @@ class Pizza:
         self.rows = rows
 
     def cut(self):
+        pass
         # crazy algorithm here
-
-    pass
