@@ -16,14 +16,13 @@ TTTTTTM\n
 
 '''
 import os
-from pizza import Pizza
+from .pizza import Pizza
 class InputError(Exception):
-    def __init__(self, expression, message):
-        self.expression = expression
+    def __init__(self, message):
         self.message = message
 
 def parse(file_path):
-    if file_path is None or not os.path.exists(file_path):
+    if not os.path.exists(file_path):
         raise InputError("Insert a valid file name")
         exit(1)
     input_file = open(file_path, "r")
