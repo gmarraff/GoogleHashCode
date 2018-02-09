@@ -5,19 +5,8 @@ Slice's model
 class Slice:
 
     def __init__(self, r0, r1, c0, c1):
-        if r0 > r1:
-            self.r0 = r1
-            self.r1 = r0
-        else:
-            self.r0 = r0
-            self.r1 = r1
-
-        if c0 > c1:
-            self.c0 = c1
-            self.c1 = c0
-        else:
-            self.c0 = c0
-            self.c1 = c1
+        self.r0, self.r1 = sorted([r0, r1])
+        self.c0, self.c1 = sorted([c0, c1])
 
     def in_bound(self, pizza):
         return \
