@@ -10,6 +10,3 @@ class Pizza:
         self.l = l
         self.h = h
         self.rows = rows
-
-    def cut(self):
-        print("tajo")
