@@ -1,14 +1,14 @@
 from .engine import Engine
 from .pizza import Pizza
-from .slice import Slice
+from .slice import LinearSlice
 
 class Solver:
 
-    def __init__(self, strategy: Engine):
+    def __init__(self, strategy):
         self.strategy = strategy
 
-    def cut(self, pizza: Pizza) -> [Slice]:
+    def cut(self, pizza):
         return self.strategy.algorithm(pizza)
 
-    def changeAlgorithm(self, newAlgorithm: Engine) -> None:
+    def changeAlgorithm(self, newAlgorithm):
         self.strategy = newAlgorithm
