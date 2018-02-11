@@ -16,7 +16,8 @@ TTTTTTM\n
 
 '''
 import os
-from .pizza import Pizza
+from model import Pizza
+
 class InputError(Exception):
     def __init__(self, message):
         self.message = message

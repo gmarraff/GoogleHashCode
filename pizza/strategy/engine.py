@@ -1,6 +1,4 @@
 import abc
-from .pizza import Pizza
-from .slice import LinearSlice
 
 class Engine(metaclass=abc.ABCMeta):
 

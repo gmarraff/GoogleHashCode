@@ -1,6 +1,6 @@
 from .engine import Engine
-from .pizza import Pizza
-from .slice import LinearSlice
+from model import Pizza
+from model import LinearSlice
 
 class Linear(Engine):
 

@@ -1,6 +1,4 @@
 from .engine import Engine
-from .pizza import Pizza
-from .slice import LinearSlice
 
 class Solver:
 
