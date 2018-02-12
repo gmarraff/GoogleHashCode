@@ -1,4 +1,4 @@
-# using Three Linear algorithm
+# using Tree Linear algorithm
 ############################################################
 track time --- 0.0 seconds --- parsing input_data_set/example.in
 solving cut problem for input_data_set/example.in file ...

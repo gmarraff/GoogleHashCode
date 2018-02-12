@@ -47,7 +47,7 @@ if __name__ == "__main__":
     orig_stdout = sys.stdout
     f = open('log/stdout_{0}.txt'.format(round(time.time() * 1000)), 'w')
     sys.stdout = f
-    print ("# using Linear algorithm")
+    print ("# using Tree Linear algorithm")
     time_track("main", main)
     sys.stdout = orig_stdout
     f.close()
