@@ -13,6 +13,7 @@ from modules import InputError
 from modules import time_track
 from strategy import Solver
 from strategy import Linear
+from strategy import LinearTree
 from model import LinearSlice
 
 def solving(filename):
@@ -21,7 +22,7 @@ def solving(filename):
         print ('#' * 60)
         pizza = time_track("parsing {0}".format(filename), parse, filename)
         print ("solving cut problem for {0} file ...".format(filename))
-        solver = Solver(Linear())
+        solver = Solver(LinearTree())
         slice_array = time_track("solving {0}".format(filename), solver.cut, pizza)
         size = 0
         for slice in slice_array:
@@ -35,7 +36,8 @@ def solving(filename):
     return out
 
 def main(*argv):
-    size = solving("input_data_set/example.in")
+    size = 0
+    size += solving("input_data_set/example.in")
     size += solving("input_data_set/small.in")
     size += solving("input_data_set/medium.in")
     size += solving("input_data_set/big.in")
