@@ -1,0 +1,35 @@
+# using Linear algorithm
+############################################################
+track time --- 0.0 seconds --- parsing input_data_set/example.in
+solving cut problem for input_data_set/example.in file ...
+track time --- 0.0 seconds --- solving input_data_set/example.in
+slice coverage 0.0 for input_data_set/example.in file.
+track time --- 0.0 seconds --- encoding output_data_set/example.out
+write into output_data_set/example.out
+
+############################################################
+track time --- 0.0 seconds --- parsing input_data_set/small.in
+solving cut problem for input_data_set/small.in file ...
+track time --- 0.0 seconds --- solving input_data_set/small.in
+slice coverage 1.0 for input_data_set/small.in file.
+track time --- 0.004246234893798828 seconds --- encoding output_data_set/small.out
+write into output_data_set/small.out
+
+############################################################
+track time --- 0.0 seconds --- parsing input_data_set/medium.in
+solving cut problem for input_data_set/medium.in file ...
+track time --- 0.031256675720214844 seconds --- solving input_data_set/medium.in
+slice coverage 1.0 for input_data_set/medium.in file.
+track time --- 0.04520010948181152 seconds --- encoding output_data_set/medium.out
+write into output_data_set/medium.out
+
+############################################################
+track time --- 0.009024381637573242 seconds --- parsing input_data_set/big.in
+solving cut problem for input_data_set/big.in file ...
+track time --- 0.09124183654785156 seconds --- solving input_data_set/big.in
+slice coverage 0.88 for input_data_set/big.in file.
+track time --- 0.2549729347229004 seconds --- encoding output_data_set/big.out
+write into output_data_set/big.out
+
+total score: 930042
+track time --- 0.46000027656555176 seconds --- main
