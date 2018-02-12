@@ -17,7 +17,6 @@ class LinearSlice:
         if self.c < 0 or self.c >= LinearSlice.__pizza.c:
             raise Exception("second param (c) not in pizza's bound")
 
-
         self.size = 1
 
         self.t = 1 if LinearSlice.__pizza.rows[r][c] is 'T' else 0
@@ -68,5 +67,14 @@ class LinearSlice:
     def __eq__(self, other):
         return isinstance(self, other.__class__) and self.__dict__ == other.__dict__
 
-class AntiSlice:
-    pass
+class AntiLinearSlice(LinearSlice):
+
+    def __init__(self, r, c):
+        super().__init__(r, c)
+
+    # unsafe
+    def add_rigth(self):
+        if self.c+self.size < LinearSlice.__pizza.c:
+            self.t += 1 if LinearSlice.__pizza.rows[self.r][self.c+self.size] is 'T' else 0
+            self.m += 1 if LinearSlice.__pizza.rows[self.r][self.c+self.size] is 'M' else 0
+        self.size += 1
