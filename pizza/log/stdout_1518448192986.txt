@@ -20,7 +20,7 @@ solving cut problem for input_data_set/medium.in file ...
 track time --- 0.5477650165557861 seconds --- solving input_data_set/medium.in
 slice coverage 0.92466 for input_data_set/medium.in file.
 track time --- 0.015667438507080078 seconds --- encoding output_data_set/medium.out
-write into output_data_set/medium.out
+write into outpu t_data_set/medium.out
 
 ############################################################
 track time --- 0.015628814697265625 seconds --- parsing input_data_set/big.in

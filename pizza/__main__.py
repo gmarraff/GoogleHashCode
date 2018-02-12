@@ -43,7 +43,7 @@ def main(*argv):
 
 if __name__ == "__main__":
     orig_stdout = sys.stdout
-    f = open('/log/stdout_{0}.txt'.format(round(time.time() * 1000)), 'w')
+    f = open('log/stdout_{0}.txt'.format(round(time.time() * 1000)), 'w')
     sys.stdout = f
     print ("# using Linear algorithm")
     time_track("main", main)
