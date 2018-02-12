@@ -1,6 +1,10 @@
 '''
 Slice's model
+
+REQUIREMENTS:
+python -m pip install colorama
 '''
+import colorama
 
 class LinearSlice:
     __pizza = None
@@ -24,6 +28,7 @@ class LinearSlice:
 
 
     def static_init(pizza):
+        colorama.init()
         LinearSlice.__pizza = pizza
 
     def contain_ingredients(self):
@@ -62,7 +67,10 @@ class LinearSlice:
         return not self.is_valid()
 
     def __str__(self):
-        return "(r:{0}, c:{1}, size:{2})".format(self.r, self.c, self.size)
+
+        c_start = '\033[91m' if self.size > LinearSlice.__pizza.h else "\033[0m"
+        c_end = '\033[0m'
+        return str(c_start+"(r:{0}, c:{1}, size:{2})"+c_end).format(self.r, self.c, self.size)
 
     def __eq__(self, other):
         return isinstance(self, other.__class__) and self.__dict__ == other.__dict__

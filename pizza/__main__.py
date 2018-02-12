@@ -3,8 +3,10 @@ USAGE
 python main.py input_path
 REQUIREMENTS
 python >= 3.0
+colorama modules (python -m pip install colorama)
 '''
 import sys
+import time
 from modules import parse
 from modules import encode
 from modules import InputError
@@ -40,4 +42,10 @@ def main(*argv):
     print ("total score: {0}".format(size))
 
 if __name__ == "__main__":
+    orig_stdout = sys.stdout
+    f = open('/log/stdout_{0}.txt'.format(round(time.time() * 1000)), 'w')
+    sys.stdout = f
+    print ("# using Linear algorithm")
     time_track("main", main)
+    sys.stdout = orig_stdout
+    f.close()

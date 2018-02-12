@@ -2,6 +2,7 @@ from .engine import Engine
 from model import Pizza
 from model import LinearSlice
 from model import AntiLinearSlice
+from modules import time_track
 
 class Linear(Engine):
 
@@ -13,7 +14,7 @@ class Linear(Engine):
             call = self.linear(i, pizza.c)
             out.append(call[0])
             anti.append(call[1])
-        # TODO: other stuff
+        
         return [item for sublist in out for item in sublist]
 
     def linear(self, index, max):
@@ -24,7 +25,7 @@ class Linear(Engine):
             slice, anti, i = self.add_slice(index, i)
             if slice is not None:
                 array_slices.append(slice)
-            elif anti is not None and len(array_anti) > 1 and array_anti[-1].c is i - 2:
+            elif anti is not None and len(array_anti) > 0 and array_anti[-1].c+array_anti[-1].size-1 is i - 2:
                 array_anti[-1].add_right()
             else:
                 array_anti.append(anti)
