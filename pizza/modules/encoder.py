@@ -1,3 +1,6 @@
+from .time import time_track
+
+@time_track
 def encode(out_path, slice_array):
     ctx = str(len(slice_array)) + "\n"
     for slice in slice_array:

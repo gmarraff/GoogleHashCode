@@ -1,6 +1,8 @@
 '''
 USAGE
-python main.py input_path
+python main.py [-log]
+PARAMS
+-log for write output logs
 REQUIREMENTS
 python >= 3.0
 colorama modules (python -m pip install colorama)
@@ -19,51 +21,58 @@ from strategy import Linear
 from strategy import LinearTree
 from model import LinearSlice
 
+@time_track
 def solving(filename):
-    out = 0
     try:
-        print ('#' * 60)
-        pizza = time_track("parsing {0}".format(filename), parse, filename)
-        pizza.rows = list(map(list, zip(*pizza.rows)))
-        temp = pizza.r
-        pizza.r=pizza.c
-        pizza.c=temp
+        # header
+        print ("{0}{1}{0}".format('#' * 30, filename))
+
+        # parsing input filename
+        pizza = parse(filename)
+
         print ("solving cut problem for {0} file ...".format(filename))
+        # solving cut algorithm
         solver = Solver(LinearTree())
-        slice_array = time_track("solving {0}".format(filename), solver.cut, pizza)
-        size = 0
-        for slice in slice_array:
-            size += slice.size
+        slice_array = solver.cut(pizza)
+
+        # calculate slice coverage
+        size = sum([slice.size for slice in slice_array])
         print ("slice coverage {0} for {1} file.".format((size)/(pizza.r*pizza.c), filename))
-        time_track("encoding output{0}.out".format(filename[5:-3]), encode, "output"+filename[5:-3]+".out", slice_array,)
+
+        # TODO: validate output
+
+        # encoding output
+        encode("output"+filename[5:-3]+".out", slice_array)
         print ("write into output{0}.out\n".format(filename[5:-3]))
-        out = size
+
+        return size
     except InputError as err:
         print("Error: {0}".format(err))
-    return out
+    return 0
 
+def redirect_output():
+    sys.stdout = open('log/stdout_{0}.txt'.format(round(time.time() * 1000)), 'w')
+    print ("# using Tree Linear algorithm")
+
+@time_track
 def main(*argv):
-    size = 0
-    size += solving("input_data_set/example.in")
-    size += solving("input_data_set/small.in")
-    size += solving("input_data_set/medium.in")
-    size += solving("input_data_set/big.in")
+    # redirect file to log dir if not "-dev" arg
+    if "-log" in argv: redirect_output()
+
+    # recursion is limit to solving the last big pizza
+    sys.setrecursionlimit(2 ** 20)
+
+    # solving all pizza data sets
+    input_files = [
+        "input_data_set/example.in",
+        "input_data_set/small.in",
+        "input_data_set/medium.in",
+        "input_data_set/big.in"
+    ] # input_files
+    size = sum([solving(input_file) for input_file in input_files])
+
+    # printing total score
     print ("total score: {0}".format(size))
 
-def getCurrentMemoryUsage():
-    # Memory usage in kB
-    f = open('/proc/{}/status'.format(os.getpid()))
-    memusage = int(f.read().split('VmRSS:')[1].split('\n')[0][:-3].strip())
-    f.close()
-    return memusage
-
 if __name__ == "__main__":
-    orig_stdout = sys.stdout
-    f = open('log/stdout_{0}.txt'.format(round(time.time() * 1000)), 'w')
-    sys.stdout = f
-    print ("# using Tree Linear algorithm with transposed pizza")
-    sys.setrecursionlimit(2 ** 20)
-    time_track("main", main)
-    print ("# using {0} [MB] of memory".format(getCurrentMemoryUsage()))
-    sys.stdout = orig_stdout
-    f.close()
+    main(sys.argv[1:])

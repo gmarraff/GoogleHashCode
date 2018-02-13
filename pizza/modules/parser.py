@@ -17,11 +17,13 @@ TTTTTTM\n
 '''
 import os
 from model import Pizza
+from .time import time_track
 
 class InputError(Exception):
     def __init__(self, message):
         self.message = message
 
+@time_track
 def parse(file_path):
     if not os.path.exists(file_path):
         raise InputError("Insert a valid file name")

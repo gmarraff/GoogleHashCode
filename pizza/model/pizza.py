@@ -10,3 +10,7 @@ class Pizza:
         self.l = int(l)
         self.h = int(h)
         self.rows = rows
+
+    def transpose(self):
+        pizza.rows = list(map(list, zip(*pizza.rows)))
+        pizza.r, pizza.c = pizza.c, pizza.r
