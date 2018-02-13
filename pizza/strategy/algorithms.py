@@ -54,7 +54,8 @@ class LinearTree(Engine):
         LinearSlice.static_init(pizza)
         out = []
         for index in range(0, pizza.r):
-            i = index
+            LinearTree.i = index
+            self.tree_row.cache_clear()
             out.append(self.tree_row(0)[0])
         return [item for sublist in out for item in sublist]
 

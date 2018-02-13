@@ -1,0 +1,35 @@
+# using Tree Linear algorithm with transposed pizza
+############################################################
+track time --- 0.0 seconds --- parsing input_data_set/example.in
+solving cut problem for input_data_set/example.in file ...
+track time --- 0.001001596450805664 seconds --- solving input_data_set/example.in
+slice coverage 0.6 for input_data_set/example.in file.
+track time --- 0.0070230960845947266 seconds --- encoding output_data_set/example.out
+write into output_data_set/example.out
+
+############################################################
+track time --- 0.0 seconds --- parsing input_data_set/small.in
+solving cut problem for input_data_set/small.in file ...
+track time --- 0.00400996208190918 seconds --- solving input_data_set/small.in
+slice coverage 0.8809523809523809 for input_data_set/small.in file.
+track time --- 0.012032032012939453 seconds --- encoding output_data_set/small.out
+write into output_data_set/small.out
+
+############################################################
+track time --- 0.0010023117065429688 seconds --- parsing input_data_set/medium.in
+solving cut problem for input_data_set/medium.in file ...
+track time --- 3.5053305625915527 seconds --- solving input_data_set/medium.in
+slice coverage 0.97848 for input_data_set/medium.in file.
+track time --- 0.02709674835205078 seconds --- encoding output_data_set/medium.out
+write into output_data_set/medium.out
+
+############################################################
+track time --- 0.0070209503173828125 seconds --- parsing input_data_set/big.in
+solving cut problem for input_data_set/big.in file ...
+track time --- 27.0910906791687 seconds --- solving input_data_set/big.in
+slice coverage 0.846044 for input_data_set/big.in file.
+track time --- 0.1253340244293213 seconds --- encoding output_data_set/big.out
+write into output_data_set/big.out
+
+total score: 895014
+track time --- 30.868150234222412 seconds --- main
