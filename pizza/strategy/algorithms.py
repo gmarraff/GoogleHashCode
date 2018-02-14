@@ -7,6 +7,10 @@ from modules import DotDict
 import functools
 from collections import deque
 from model import Linear2DSlice
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
+from random import randint
+import time
 
 class Linear(Engine):
 
@@ -107,6 +111,55 @@ class Linear2DTree(Engine):
     H = L = C = R = 0
     ROWS = None
 
+    div = 1
+    p = 1
+    start_time = time.time()
+    max_time = -1
+
+    def resize_pizza(newdiv):
+        Linear2DTree.div = newdiv
+        print("##### Applied pizza division to {}".format(newdiv))
+
+    def perc(newperc):
+        Linear2DTree.p = newperc
+        print("##### Applied lower bound for coverage perc to {}".format(newperc))
+
+    # newtime in sec
+    def set_max_time(new_time):
+        Linear2DTree.max_time = new_time
+        print("##### Applied max time exec to {}".format(new_time))
+
+    # TODO: add logic to this function
+    def get_params():
+        if Linear2DTree.div is 2:
+            return [DotDict({'i':0, 'j':Linear2DTree.R-1, 'k':0, 'x':Linear2DTree.C//2-1}),\
+                DotDict({'i':0, 'j':Linear2DTree.R-1, 'k':Linear2DTree.C//2, 'x':Linear2DTree.C-1})]
+        elif Linear2DTree.div is 4:
+            return [DotDict({'i':0, 'j':Linear2DTree.R//2-1, 'k':0, 'x':Linear2DTree.C//2-1}),\
+                DotDict({'i':0, 'j':Linear2DTree.R//2-1, 'k':Linear2DTree.C//2, 'x':Linear2DTree.C-1}),\
+                DotDict({'i':Linear2DTree.R//2, 'j':Linear2DTree.R-1, 'k':0, 'x':Linear2DTree.C//2-1}),\
+                DotDict({'i':Linear2DTree.R//2, 'j':Linear2DTree.R-1, 'k':Linear2DTree.C//2, 'x':Linear2DTree.C-1})]
+        elif Linear2DTree.div is 16:
+            out = []
+            for i, j in zip([0, Linear2DTree.R//4, Linear2DTree.R//2, Linear2DTree.R//2+Linear2DTree.R//4], [Linear2DTree.R//4-1, Linear2DTree.R//2-1, Linear2DTree.R//2+Linear2DTree.R//4-1, Linear2DTree.R-1]):
+                    for k, x in zip([0, Linear2DTree.C//4, Linear2DTree.C//2, Linear2DTree.C//2+Linear2DTree.C//4], [Linear2DTree.C//4-1, Linear2DTree.C//2-1, Linear2DTree.C//2+Linear2DTree.C//4-1, Linear2DTree.C-1]):
+                            out.append(DotDict({'i': i, 'j': j, 'k': k, 'x': x}))
+            return out
+        elif Linear2DTree.div is 64:
+            R4 = Linear2DTree.R//4
+            R2 = Linear2DTree.R//2
+            R8 = Linear2DTree.R//8
+            C4 = Linear2DTree.C//4
+            C2 = Linear2DTree.C//2
+            C8 = Linear2DTree.C//8
+            out = []
+            for i, j in zip([0, R8, R4, R8+R4, R2, R2+R8, R2+R4, R2+R4+R8], [R8-1, R4-1, R8+R4-1, R2-1, R2+R8-1, R2+R4-1, R2+R4+R8-1, Linear2DTree.R-1]):
+                    for k, x in zip([0, C8, C4, C8+C4, C2, C2+C8, C2+C4, C2+C4+C8], [C8-1, C4-1, C8+C4-1, C2-1, C2+C8-1, C2+C4-1, C2+C4+C8-1, Linear2DTree.C-1]):
+                            out.append(DotDict({'i': i, 'j': j, 'k': k, 'x': x}))
+            return out
+        else:
+            return [DotDict({'i':0, 'j':Linear2DTree.R-1, 'k':0, 'x':Linear2DTree.C-1})]
+
     def algorithm(self, pizza):
         # init LinearSlice
         Linear2DSlice.static_init(pizza)
@@ -123,8 +176,34 @@ class Linear2DTree(Engine):
         Linear2DSlice.pizza.r, \
         Linear2DSlice.pizza.rows
 
-        return list(self.big_slice(0, Linear2DTree.R, 0).list)
+        out = list()
 
+        for param in Linear2DTree.get_params():
+            temp = self.wrapper_big_slice(param.i, param.j, param.k, param.x)
+            out = list(set().union(out, list(temp.list)))
+
+        # return list(self.wrapper_big_slice(0, Linear2DTree.R-1, 0, Linear2DTree.C-1).list)
+        '''
+        with ThreadPoolExecutor() as executor:
+            future_to_compute = []
+            for param in Linear2DTree.get_params():
+                future_to_compute.append(executor.submit(self.wrapper_big_slice, param.i, param.j, param.k, param.x))
+            for future in as_completed(future_to_compute):
+                try:
+                    out = list(set().union(out, list(future.result().list)))
+                except Exception as exc:
+                    print('generated an exception: {}'.format(exc))
+        '''
+
+        return out
+        # return list(self.big_slice(0, Linear2DTree.R-1, 0, Linear2DTree.C-1).list)
+
+    @time_track
+    def wrapper_big_slice(self, i, j, k, x):
+        print("\ninit sub-problem ({}, {}, {} ,{}) area:{}".format(i, j, k, x, (j-i+1)*(x-k+1)))
+        temp = self.big_slice(i, j, k, x)
+        print ("Resolve (not-optimized) sub-problem: [scoring: {}({})]".format(temp.score, temp.score/((j-i+1)*(x-k+1))))
+        return temp
     '''
     DESC
     compute sub-problem (_0) ROWS[i:j][k:],
@@ -147,11 +226,14 @@ class Linear2DTree(Engine):
     '''
     # TODO: implements right limit
     @functools.lru_cache(maxsize=None) # unbounded
-    def big_slice(self, i, j, k):
+    def big_slice(self, i, j, k, x):
+        max_score = (j-i+1)*(x-k+1)
         # return DotDict({'list': deque(), 'score': 0}) # mock
         height = j-i+1
         # base case
-        _all = Linear2DSlice.create(i, k, height, Linear2DTree.C-k)
+        _all = Linear2DSlice.create(i, k, height, x-k+1)
+        if Linear2DTree.max_time is not -1 and time.time() - Linear2DTree.start_time > Linear2DTree.max_time:
+            return DotDict({'list': deque([_all]), 'score': _all.score})
         if _all.area <= Linear2DTree.H: return \
             DotDict({'list': deque([_all]), 'score': _all.score}) \
             if _all.is_valid() else DotDict({'list': deque(), 'score': 0})
@@ -165,9 +247,8 @@ class Linear2DTree(Engine):
         # calculate big_slice problem
         for z in range(i, upper_bound):
             # recursive and big slice solver call
-            # FIXME: who call first for performance improvments?
-            recursive_call = self.big_slice(z+1, j, k)
-            slice_solver = self.big_slice_solver(i, z, k)
+            slice_solver = self.big_slice_solver(i, z, k, x)
+            recursive_call = self.big_slice(z+1, j, k, x)
 
             # calculating score of this test
             local_score = recursive_call.score + slice_solver.score
@@ -175,8 +256,14 @@ class Linear2DTree(Engine):
             # check if test score is better
             if local_score > local_best.score:
                 # refresh best case
+                #local_best.list.extend(slice_solver.list)
+                #local_best.list.extend(recursive_call.list)
                 local_best.list = deque(set().union(slice_solver.list, recursive_call.list))
                 local_best.score = local_score
+
+                # performance improvement, optimal decreasing
+                if local_score/max_score > Linear2DTree.p:
+                    return local_best
 
         return local_best
         # big_slice close
@@ -203,12 +290,16 @@ class Linear2DTree(Engine):
     COMPLEXITY O(...) with memoized cache
     '''
     @functools.lru_cache(maxsize=None) # unbounded
-    def big_slice_solver(self, i, j, k):
+    def big_slice_solver(self, i, j, k, x):
+        max_score = (j-i+1)*(x-k+1)
+
         # return DotDict({'list': deque(), 'score': 0}) # mock
         # height is fixed for every slice in this function
         height = j-i+1
         # base case
-        _all = Linear2DSlice.create(i, k, height, Linear2DTree.C-k)
+        _all = Linear2DSlice.create(i, k, height, x-k+1)
+        if Linear2DTree.max_time is not -1 and time.time() - Linear2DTree.start_time > Linear2DTree.max_time:
+            return DotDict({'list': deque([_all]), 'score': _all.score})
         if _all.area <= Linear2DTree.H:return \
             DotDict({'list': deque([_all]), 'score': _all.score}) \
             if _all.is_valid() else DotDict({'list': deque(), 'score': 0})
@@ -219,19 +310,11 @@ class Linear2DTree(Engine):
         # init output returns
         # key value accessing by dot
         local_best = DotDict({'list': deque(), 'score': 0})
-        first_time = True
+        local_slice = Linear2DSlice.create(i, k, height, 0)
         for weight in weights:
-            '''
-            if first_time:
-                # increasing performance with add_right in Linear2DSlice
-                local_slice = Linear2DSlice.create(i, k, height, weight)
-                first_time = False
-            else:
-                local_slice.add_right()
-            '''
             local_slice = Linear2DSlice.create(i, k, height, weight)
+            big_slice_rec = self.big_slice(i, j, k+weight, x)
 
-            big_slice_rec = self.big_slice(i, j, k+weight)
 
             # calculating score of this test
             local_score = local_slice.score + big_slice_rec.score
@@ -239,8 +322,14 @@ class Linear2DTree(Engine):
             # check if test score is better
             if local_score > local_best.score:
                 # refresh best case
+                #local_best.list.append(local_slice)
+                #local_best.list.extend(big_slice_rec.list)
                 local_best.list = deque(set().union([local_slice], big_slice_rec.list))
                 local_best.score = local_score
+
+                # performance improvement, optimal decreasing
+                if local_score/max_score > Linear2DTree.p:
+                    return local_best
 
         return local_best
 

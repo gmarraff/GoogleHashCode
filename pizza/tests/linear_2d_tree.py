@@ -3,13 +3,21 @@ from model import Linear2DSlice
 from model import Pizza
 from strategy import Linear2DTree
 from collections import deque
+from modules import validate
+from strategy import Solver
 
 class TestLinear2DTree(unittest.TestCase):
     def get_pizza_mock():
-        return Pizza(3, 5, 1, 6, ["MMMMM", "MTTTM", "MMMMM"])
+        return Pizza(6, 7, 1, 5, ["TMMMTTT", "MMMMTMM", "TTMTTMT", "TMMTMMM", "TTTTTTM", "TTTTTTM"])
 
     def test_algorithm(self):
-        pass
+        solver = Solver(Linear2DTree())
+        Linear2DTree.resize_pizza(1)
+        Linear2DTree.perc(1.0)
+        test = solver.cut(TestLinear2DTree.get_pizza_mock())
+        score = sum([slice.score for slice in test])
+        self.assertEqual(score, 42)
+        self.assertTrue(validate(test))
 
     def test_big_slice(self):
         Linear2DSlice.static_init(TestLinear2DTree.get_pizza_mock())
@@ -24,13 +32,8 @@ class TestLinear2DTree(unittest.TestCase):
         Linear2DSlice.pizza.r, \
         Linear2DSlice.pizza.rows
 
-        excepted = deque([Linear2DSlice.create(0, 0, 3, 2), Linear2DSlice.create(0, 2, 3, 1), Linear2DSlice.create(0, 3, 3, 2)])
-        test = Linear2DTree().big_slice(0, 2, 0).list
-        for i in excepted:
-            print("Excepted: {}".format(i))
-        for i in test:
-            print("Find: {}".format(i))
-        self.assertEqual(test, excepted)
+        self.assertEqual(Linear2DTree().big_slice(0, 5, 0, 6).score, 42)
+        self.assertTrue(validate(Linear2DTree().big_slice(0, 5, 0, 6).list))
 
 
     def test_big_slice_solver(self):
@@ -45,8 +48,5 @@ class TestLinear2DTree(unittest.TestCase):
         Linear2DSlice.pizza.c, \
         Linear2DSlice.pizza.r, \
         Linear2DSlice.pizza.rows
-        '''
-        test = Linear2DTree().big_slice_solver(0, 2, 0).list
-        for i in test:
-            print(i)
-        '''
+
+        pass

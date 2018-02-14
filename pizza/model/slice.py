@@ -106,15 +106,12 @@ class Linear2DSlice():
         self.r, self.c, self.h, self.w = r, c, h, w
         self.area = self.h * self.w
         self.m = self.t = 0
+        self.__get_m_t()
         self.v = self.__condition()
-        if self.v:
-            self.__ci()
-            self.score = self.area if self.is_valid() else 0
-        else:
-            self.score = 0
+        self.score = self.area if self.v else 0
 
     def is_valid(self):
-        return self.v and min(self.m, self.t) >= Linear2DSlice.pizza.l
+        return self.v
 
     def __condition(self):
         return \
@@ -124,27 +121,27 @@ class Linear2DSlice():
             self.area <= Linear2DSlice.pizza.h and \
             min(self.w, self.h) > 0 and \
             self.r+self.h <= Linear2DSlice.pizza.r and \
-            self.c+self.w <= Linear2DSlice.pizza.c
+            self.c+self.w <= Linear2DSlice.pizza.c and \
+            min(self.t, self.m) >= Linear2DSlice.pizza.l
 
-    def __ci(self, lower_bound =0):
+    def __get_m_t(self, lower_bound=0):
         for i in range(self.r, self.r+self.h):
             for j in range(self.c + lower_bound, self.c+self.w):
-                if Linear2DSlice.pizza.rows[i][j] is 'M':
-                    self.m += 1
-                else:
-                    self.t += 1
+                self.m += 1 if Linear2DSlice.pizza.r > i and \
+                    Linear2DSlice.pizza.c > j and \
+                    Linear2DSlice.pizza.rows[i][j] is 'M' \
+                    else 0
+                self.t += 1 if Linear2DSlice.pizza.r > i and \
+                    Linear2DSlice.pizza.c > j and \
+                    Linear2DSlice.pizza.rows[i][j] is 'T' \
+                    else 0
 
     def add_right(self):
-        old_w = self.w
         self.w += 1
         self.area += self.h
+        self.__get_m_t(self.w-1)
         self.v = self.__condition()
-        if self.v:
-            self.__ci(old_w)
-            self.score = self.area
-        else:
-            self.score = 0
-        return self
+        self.score = self.area if self.v else 0
 
     def __str__(self):
         c_start = '\033[91m' if not self.is_valid() else "\033[0m"
