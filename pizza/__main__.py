@@ -17,11 +17,10 @@ from modules import encode
 from modules import InputError
 from modules import time_track
 from strategy import Solver
-from strategy import Linear
-from strategy import LinearTree
+from strategy import Linear2DTree
 from model import LinearSlice
+import concurrent.futures
 
-@time_track
 def solving(filename):
     try:
         # header
@@ -32,12 +31,12 @@ def solving(filename):
 
         print ("solving cut problem for {0} file ...".format(filename))
         # solving cut algorithm
-        solver = Solver(LinearTree())
+        solver = Solver(Linear2DTree())
         slice_array = solver.cut(pizza)
 
         # calculate slice coverage
-        size = sum([slice.size for slice in slice_array])
-        print ("slice coverage {0} for {1} file.".format((size)/(pizza.r*pizza.c), filename))
+        score = sum([slice.score for slice in slice_array])
+        print ("slice coverage {0} for {1} file.".format((score)/(pizza.r*pizza.c), filename))
 
         # TODO: validate output
 
@@ -45,7 +44,7 @@ def solving(filename):
         encode("output"+filename[5:-3]+".out", slice_array)
         print ("write into output{0}.out\n".format(filename[5:-3]))
 
-        return size
+        return score
     except InputError as err:
         print("Error: {0}".format(err))
     return 0
@@ -70,6 +69,14 @@ def main(*argv):
         "input_data_set/big.in"
     ] # input_files
     size = sum([solving(input_file) for input_file in input_files])
+    #with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    #    for input_file in input_files[:-1]: # no big test, too much complex
+    #        try:
+    #            size += executor.submit(solving(input_file)).result()
+    #        except Exception as e:
+    #            print ("Unexpected error: {0}\n{1}".format(e.__doc__, e.message))
+    # size = sum([executor.submit(solving(input_file) for input_file in input_files[:-1]])
+
 
     # printing total score
     print ("total score: {0}".format(size))
