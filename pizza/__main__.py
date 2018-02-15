@@ -1,17 +1,19 @@
 '''
 USAGE
-python main.py [-log]
+for the best result
+python __main__.py input_data_set/example.in 1 1.0 30
+python __main__.py input_data_set/small.in 1 1.0 30
+python __main__.py input_data_set/medium.in 16 0.996 180
+python __main__.py input_data_set/big.in 64 1 -1 1
 PARAMS
 -log for write output logs
 REQUIREMENTS
 python >= 3.0
 colorama modules (python -m pip install colorama)
-psutil modules (python -m pip install psutil)
 '''
 import sys
 import os
 import time
-import psutil
 from modules import parse
 from modules import encode
 from modules import validate
@@ -22,7 +24,7 @@ from strategy import Linear2DTree
 from model import LinearSlice
 import concurrent.futures
 
-def solving(filename, div, p, maxtime):
+def solving(filename, div, p, maxtime, limit):
     try:
         # header
         print ("{0}{1}{0}".format('#' * 30, filename))
@@ -36,6 +38,7 @@ def solving(filename, div, p, maxtime):
         Linear2DTree.resize_pizza(int(div))
         Linear2DTree.perc(float(p))
         Linear2DTree.set_max_time(int(maxtime))
+        Linear2DTree.set_limit_upper_bound(int(limit))
         slice_array = solver.cut(pizza)
 
         # calculate slice coverage
@@ -47,6 +50,8 @@ def solving(filename, div, p, maxtime):
         # encoding output
         encode("output"+filename[5:-3]+".out", slice_array)
         print ("write into output{0}.out\n".format(filename[5:-3]))
+
+        return score
     except InputError as err:
         print("Error: {0}".format(err))
     return 0
@@ -60,7 +65,8 @@ def main(argv):
     div = argv[2] if len(argv) > 2 else 1
     perc = argv[3] if len(argv) > 3 else 1.0
     maxtime = argv[4] if len(argv) > 4 else -1
-    solving(filename, div, perc, maxtime)
+    limit = argv[5] if len(argv) > 5 else 1000
+    solving(filename, div, perc, maxtime, limit)
 
 if __name__ == "__main__":
     main(sys.argv)

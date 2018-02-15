@@ -115,6 +115,7 @@ class Linear2DTree(Engine):
     p = 1
     start_time = time.time()
     max_time = -1
+    limit_upper_bound = 1000
 
     def resize_pizza(newdiv):
         Linear2DTree.div = newdiv
@@ -128,6 +129,10 @@ class Linear2DTree(Engine):
     def set_max_time(new_time):
         Linear2DTree.max_time = new_time
         print("##### Applied max time exec to {}".format(new_time))
+
+    def set_limit_upper_bound(l):
+        Linear2DTree.limit_upper_bound = l
+        print("##### set upper bound limit slice to {}".format(l))
 
     # TODO: add logic to this function
     def get_params():
@@ -182,19 +187,6 @@ class Linear2DTree(Engine):
             temp = self.wrapper_big_slice(param.i, param.j, param.k, param.x)
             out = list(set().union(out, list(temp.list)))
 
-        # return list(self.wrapper_big_slice(0, Linear2DTree.R-1, 0, Linear2DTree.C-1).list)
-        '''
-        with ThreadPoolExecutor() as executor:
-            future_to_compute = []
-            for param in Linear2DTree.get_params():
-                future_to_compute.append(executor.submit(self.wrapper_big_slice, param.i, param.j, param.k, param.x))
-            for future in as_completed(future_to_compute):
-                try:
-                    out = list(set().union(out, list(future.result().list)))
-                except Exception as exc:
-                    print('generated an exception: {}'.format(exc))
-        '''
-
         return out
         # return list(self.big_slice(0, Linear2DTree.R-1, 0, Linear2DTree.C-1).list)
 
@@ -238,7 +230,10 @@ class Linear2DTree(Engine):
             DotDict({'list': deque([_all]), 'score': _all.score}) \
             if _all.is_valid() else DotDict({'list': deque(), 'score': 0})
 
-        upper_bound = min(i+Linear2DTree.H, j+1)
+        if height is 1:
+            self.big_slice_solver(i, j, k, x)
+
+        upper_bound = min(i+Linear2DTree.H, j+1, i+Linear2DTree.limit_upper_bound)
 
         # init output returns
         # key value accessing by dot
@@ -262,7 +257,7 @@ class Linear2DTree(Engine):
                 local_best.score = local_score
 
                 # performance improvement, optimal decreasing
-                if local_score/max_score > Linear2DTree.p:
+                if local_score/max_score >= Linear2DTree.p:
                     return local_best
 
         return local_best
@@ -328,7 +323,7 @@ class Linear2DTree(Engine):
                 local_best.score = local_score
 
                 # performance improvement, optimal decreasing
-                if local_score/max_score > Linear2DTree.p:
+                if local_score/max_score >= Linear2DTree.p:
                     return local_best
 
         return local_best

@@ -16,6 +16,7 @@ class TestLinear2DTree(unittest.TestCase):
         Linear2DTree.perc(1.0)
         test = solver.cut(TestLinear2DTree.get_pizza_mock())
         score = sum([slice.score for slice in test])
+        for i in test: print(i)
         self.assertEqual(score, 42)
         self.assertTrue(validate(test))
 

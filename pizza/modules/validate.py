@@ -11,4 +11,5 @@ def validate(slice_array):
                         used[i][j] = True
                     else:
                         raise Exception("Solution isn't valid!")
+    print ("validate solution: OK!")
     return True
