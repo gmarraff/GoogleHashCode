@@ -1,52 +1,69 @@
 package com.hascode.cars;
 
-import java.util.ArrayList;
+import java.util.List;
 
 class ChooseNext {
     // maxiter massimo, lowerbound massimo e slack nullo per la soluzione più stretta possibile
-    public static Integer chooseNext(ArrayList<Ride> r, Car c, Integer time, Integer maxIter, Integer lowerBound, Integer slack) {
-        if (r.size() < 1) return -1;
+    public static Integer chooseNext(
+        List<Ride> r, 
+        Car c, 
+        Integer time, 
+        Integer maxTime, 
+        Integer maxIter, 
+        Integer lowerBound, 
+        Integer slack,
+        Integer bonus) {
+        if (r.size() < 1) return -1; // casi base non ho elementi in r
 
-        Integer out = 0, 
-            max = getScore(r.get(0), time, c), 
-            max_temp;
+        Integer out = 0, // indice (interno a r) dell'elemento scelto
+            max = getScore(r.get(0), c, time, bonus), // score massima
+            max_temp; // score temporanea all'interno del ciclo
         
         for (Integer i = 1; i < r.size() && i < maxIter; i++){
-            if (checkValidity(r.get(i), time, c, slack)) {
-                max_temp = getScore(r.get(i), time, c);
+            // controllo validità del rider r con la macchina c all'istante time con uno slack iniziale
+            if (checkValidity(r.get(i), time, maxTime, c, slack)) {
+                max_temp = getScore(r.get(i), c, time, bonus);
+                // controllo se miglioro la soluzione migliore
                 if (max_temp > max) {
                     out = i;
                     max = max_temp;
+                    // controllo se supero l'upper bound
                     if (max >= lowerBound) {
+                        // modifico la posizione della macchina prima di ritornare
                         c.x = r.get(out).x;
                         c.y = r.get(out).y;
+                        r.get(out).f = 0; // per non riprenderla mai più la stessa macchina
                         return r.get(out).index;
                     }
                 }
             }
         }
+        // modifico la posizione della macchina prima di ritornare
         c.x = r.get(out).x;
         c.y = r.get(out).y;
+        r.get(out).f = 0; // per non riprenderla mai più la stessa macchina
         return r.get(out).index;
 
     } // chooseNext
 
-    public static boolean checkValidity(Ride r, Integer time, Car c, Integer slack) {
+    public static boolean checkValidity(Ride r, Integer time, Integer maxTime, Car c, Integer slack) {
         // distanza inizio fine
         Integer distPercorso = Math.abs(r.x-r.a)+Math.abs(r.y-r.b),
             distCarRide = Math.abs(c.x-r.x)+Math.abs(c.y-r.y);
 
         // controllo che la car possa arrivare in tempo al Ride AND
         // controllo che la macchina arrivi antro s unita dalla partenza
-        return (r.f <= time + distCarRide + distPercorso &&
+        return (time + distCarRide + distPercorso <= maxTime &&
+            r.f <= time + distCarRide + distPercorso &&
             r.s >= time + distCarRide + slack);
 
     }
 
-    public static Integer getScore(Ride r, Integer time, Car c) {
+    public static Integer getScore(Ride r, Car c, Integer time, Integer bonus) {
         Integer distPercorso = Math.abs(r.x-r.a)+Math.abs(r.y-r.b),
-            bonus = 0;
-        return distPercorso + bonus;
+            b = 0;
+        if (r.s == time) b = bonus;
+        return distPercorso + b;
     }
 
 }
