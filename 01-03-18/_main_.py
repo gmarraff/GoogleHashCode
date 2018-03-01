@@ -1,7 +1,10 @@
 import sys
 from parser import parse
+
+
 def main(argv):
-    parse(argv[1])
+    value = parse(argv[1])
+    print value
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(['', 'input/e_high_bonus.in'])

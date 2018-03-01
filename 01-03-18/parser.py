@@ -2,11 +2,17 @@ import os
 global START_X, END_X
 START_X = 0
 START_Y = 0
+
+
 class InputError(Exception):
     def __init__(self, message):
         self.message = message
+
+
 def order(arr):
     return sorted(arr, key=lambda ride: abs(START_X-ride['a'])+abs(START_Y-ride['b']))
+
+
 def parse(file_path):
     if not os.path.exists(file_path):
         raise InputError("Insert a valid file name")
@@ -27,4 +33,5 @@ def parse(file_path):
             's': int(raw_ride[4]),
             'f': int(raw_ride[5])
         })
-    print order(parsed_rides)
+    sorted_data = order(parsed_rides)
+    return sorted_data
