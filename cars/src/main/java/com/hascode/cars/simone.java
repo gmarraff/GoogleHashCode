@@ -14,15 +14,14 @@ class Simone {
 
         ArrayList<Ride> diag1 = new ArrayList<>();
         IntStream.range(0, nDiag).forEach(
-                x -> {  riders.get(x)
-                        .stream()
-                        .forEach(rid ->diag1.add(rid));}
+                x -> {  riders.get(diag-x)
+                            .stream()
+                            .forEach(rid ->diag1.add(rid));
+                        riders.get(diag+x)
+                            .stream()
+                            .forEach(rid ->diag1.add(rid));
+                }
         );
-
-
-        ArrayList<Ride> diag2 = riders.get(diag);
-        ArrayList<Ride> diag3 = riders.get(diag+1);
-
 
         return diag1
                 .stream()
