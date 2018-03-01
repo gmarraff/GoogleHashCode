@@ -10,4 +10,7 @@ class Ride{
     this.f = f;
     this.index = index;
   }
+  public Integer getX(){
+    return this.x;
+  }
 }

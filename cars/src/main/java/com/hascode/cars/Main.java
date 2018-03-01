@@ -23,7 +23,7 @@ public class Main {
         BufferedReader bufferedInputStream = new BufferedReader(resource);
         Parser parser = new Parser(bufferedInputStream.lines());
         Map<String, Integer> data = parser.getData();
-        data.get("t");
+        System.out.println(data.get("r"));
     }
 
 }
