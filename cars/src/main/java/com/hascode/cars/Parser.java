@@ -7,15 +7,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Parser{
-  private String file_path;
+  private Stream<String> fileStream;
   private HashMap<Integer, ArrayList<Ride>> rides;
   private HashMap<String, Integer> data;
 
-  //file_path -> stringa del file recuperata da argv
-  public Parser(String file_path){
-    this.file_path = file_path;
+  public Parser(Stream<String> fileStream){
+    this.fileStream = fileStream;
+    this.rides = new HashMap();
+    this.data = new HashMap();
+  }
+  private void fillData(String[] values){
+    data.put("r", Integer.parseInt(values[0]));
+    data.put("c", Integer.parseInt(values[1]));
+    data.put("f", Integer.parseInt(values[2]));
+    data.put("n", Integer.parseInt(values[3]));
+    data.put("b", Integer.parseInt(values[4]));
+    data.put("t", Integer.parseInt(values[5]));
   }
   public void read(){
+      String dataLine = fileStream.findFirst().toString();
+      this.fillData(dataLine.split(" "));
 
   }
   public  void parse(){
